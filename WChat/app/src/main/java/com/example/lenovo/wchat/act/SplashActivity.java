@@ -11,6 +11,7 @@ import com.hyphenate.chat.EMClient;
 
 /**
  * Created by Lenovo on 2017/4/20.
+ * 启动页
  */
 
 public class SplashActivity extends BaseActivity {
@@ -19,15 +20,23 @@ public class SplashActivity extends BaseActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            //判断       单例模式的方法名   是否之前登陆过
-            if (EMClient.getInstance().isLoggedInBefore()) {
-                intentToMain();
-            } else {
-                intentToLogin();
-            }
-            finish();
+            intentToNext();
+
         }
     };
+
+    /**
+     * 跳转下一个页面
+     */
+    private void intentToNext() {
+        //判断       单例模式的方法名   是否之前登陆过
+        if (EMClient.getInstance().isLoggedInBefore()) {
+            intentToMain();
+        } else {
+            intentToLogin();
+        }
+        finish();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +47,7 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 handler.removeMessages(1);
+                intentToNext();
             }
         });
     }

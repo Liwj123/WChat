@@ -43,7 +43,7 @@
         <!-- 设置环信应用的AppKey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="1161170420178731#im1" />
+            android:value="1122170419115553#wchat" />
 
         <!-- 声明SDK所需的service SDK核心功能 -->
         <service
@@ -71,7 +71,8 @@
         <activity
             android:name=".act.LoginActivity"
             android:label="@string/title_activity_login"></activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".act.MainActivity"></activity>
+        <activity android:name=".act.RegisterActivity"></activity>
     </application>
 
 </manifest>

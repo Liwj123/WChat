@@ -3,8 +3,6 @@ package com.example.lenovo.wchat.act;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.lenovo.wchat.MainActivity;
-
 /**
  * Created by Lenovo on 2017/4/20.
  */
