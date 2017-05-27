@@ -7,6 +7,7 @@ import com.hyphenate.chat.EMOptions;
 
 /**
  * Created by Lenovo on 2017/4/20.
+ * 初始化sdk，工具类时在本页面，属于本程序的入口
  */
 
 public class MyApplication extends Application {

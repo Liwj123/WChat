@@ -18,4 +18,8 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void intentToRegister(){
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
 }

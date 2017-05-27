@@ -79,11 +79,13 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
         setContentView(R.layout.activity_login);
         initView();
         getUserName();
+        /**
+         * 跳转注册页面
+         */
         tv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
+                intentToRegister();
             }
         });
 

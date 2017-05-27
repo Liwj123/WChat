@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -7,61 +8,83 @@
     <ImageView
         android:id="@+id/item_chat_iv"
         android:layout_width="0dp"
-        android:layout_weight="3"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"/>
+        android:layout_weight="3"
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
-        android:layout_marginTop="5dp"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_weight="10"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
+
         <TextView
-            android:textSize="15dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginBottom="5dp"
-            android:text="姓名"
             android:id="@+id/item_chat_name"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <TextView
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="5dp"
-            android:textSize="10dp"
-            android:text="收到的最新消息"
-            android:id="@+id/item_chat_chat"
+            android:layout_weight="1"
+            android:text="姓名"
+            android:textSize="15dp" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/item_chat_caogao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="5dp"
+                android:text="[草稿]"
+                android:textColor="#ff0000"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/item_chat_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:text="收到的最新消息"
+                android:textSize="10dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginRight="8dp"
         android:layout_marginTop="5dp"
-        android:layout_width="0dp"
         android:layout_weight="2"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
+
         <TextView
-            android:layout_marginRight="7dp"
-            android:layout_gravity="right"
-            android:layout_marginTop="5dp"
-            android:textSize="10dp"
-            android:text="12:12"
             android:id="@+id/item_chat_time"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <TextView
-            android:layout_marginRight="7dp"
             android:layout_gravity="right"
+            android:layout_marginRight="7dp"
             android:layout_marginTop="5dp"
-            android:text="1"
+            android:layout_weight="1"
+            android:text="12:12"
+            android:textSize="10dp" />
+
+        <TextView
             android:id="@+id/item_chat_info"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_gravity="right"
+            android:layout_marginRight="7dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:text="1" />
     </LinearLayout>
 </LinearLayout>

@@ -21,7 +21,6 @@ public class SplashActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             intentToNext();
-
         }
     };
 
@@ -43,6 +42,8 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         handler.sendEmptyMessageDelayed(1, 3000);
+
+        //触发的时候关闭延时，直接跳转
         findViewById(R.id.splash_img).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,5 +51,13 @@ public class SplashActivity extends BaseActivity {
                 intentToNext();
             }
         });
+    }
+
+    /**
+     * 返回键的监听，将super删除后返回键在此页面将失效
+     */
+    @Override
+    public void onBackPressed() {
+
     }
 }

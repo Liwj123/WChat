@@ -11,19 +11,31 @@ public class SPUtil {
     private static final String SP_NAME = "user";
     private static final String USER_KEY = "userName";
     private static SharedPreferences sp;
-    public static void setLoginUser(Context context,String user){
+    private static final String CHAT_DEFF = "chatdeff";
+
+    public static String getChatDeff(Context context) {
         getSP(context);
-        sp.edit().putString(USER_KEY,user).apply();
+        return sp.getString(CHAT_DEFF, "");
+    }
+
+    public static void setChatDeff(Context context, String json) {
+        getSP(context);
+        sp.edit().putString(CHAT_DEFF, json).apply();
+    }
+
+    public static void setLoginUser(Context context, String user) {
+        getSP(context);
+        sp.edit().putString(USER_KEY, user).apply();
     }
 
     private static void getSP(Context context) {
-        if (sp == null){
+        if (sp == null) {
             sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         }
     }
 
-    public static String getLoginUser(Context context){
+    public static String getLoginUser(Context context) {
         getSP(context);
-        return sp.getString(USER_KEY,"");
+        return sp.getString(USER_KEY, "");
     }
 }
