@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.act.MessageActivity;
 import com.example.lenovo.wchat.adapter.FaceAdapter;
 import com.example.lenovo.wchat.callback.IFaceItemClick;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
  * Created by Lenovo on 2017/5/26.
  */
 
-public class FaceFragment extends Fragment {
+public class FaceFragment extends BaseFragment {
 
     private RecyclerView recyclerView;
     private ArrayList<Integer> list;
@@ -64,7 +65,7 @@ public class FaceFragment extends Fragment {
         adapter.setonFaceItemClick(new IFaceItemClick() {
             @Override
             public void faceItemClick(int position) {
-                Toast.makeText(getActivity(), list.get(position).toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), list.get(position), Toast.LENGTH_SHORT).show();
             }
         });
 

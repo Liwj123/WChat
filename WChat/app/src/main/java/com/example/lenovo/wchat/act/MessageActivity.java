@@ -21,16 +21,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.adapter.MessageAdapter;
 import com.example.lenovo.wchat.fragment.FaceFragment;
 import com.example.lenovo.wchat.fragment.ImageFragment;
+import com.example.lenovo.wchat.fragment.VoiceFregment;
 import com.example.lenovo.wchat.manager.MessageManager;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +55,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     private ImageView yuyin, img, biaoqing, add;
     private ImageFragment imgFragment;
     private FaceFragment faceFragment;
+    private VoiceFregment voiceFregment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,6 +115,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         add = (ImageView) findViewById(R.id.message_add);
         imgFragment = new ImageFragment();
         faceFragment = new FaceFragment();
+        voiceFregment = new VoiceFregment();
 
 
         yuyin.setOnClickListener(this);
@@ -251,6 +256,11 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         txt = "";
     }
 
+    public void createVoice(String path, File file) {
+        EMMessage msg = EMMessage.createVoiceSendMessage(path, (int) file.length(), name);
+        sendMessage(msg);
+    }
+
     //发送消息
     private void sendMessage(EMMessage msg) {
         msg.setChatType(EMMessage.ChatType.Chat);
@@ -277,11 +287,12 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                 }
                 break;
             case R.id.message_yuyin:
-
+                openCloseFrame(R.id.message_yuyin);
+                hideKeyBoard();
                 break;
             case R.id.message_img:
                 openCloseFrame(R.id.message_img);
-                //图片图标是将软键盘收起
+                //点击图片图标是将软键盘收起
                 hideKeyBoard();
                 break;
             case R.id.message_biaoqing:
@@ -309,6 +320,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     private void openCloseFrame(int res) {
         FragmentTransaction ft_img = null;
         FragmentTransaction ft_face = null;
+        FragmentTransaction ft_voice = null;
         if (res == R.id.message_img) {
             FragmentManager fm = getSupportFragmentManager();
             if (imgFragment.isVisible()) {
@@ -321,6 +333,16 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                     fm.popBackStack();
                     if (ft_face != null) {
                         ft_face.remove(faceFragment);
+
+                    }
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                    fragmentTransaction.add(R.id.message_frame, imgFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else if (voiceFregment.isVisible()) {
+                    fm.popBackStack();
+                    if (ft_voice != null) {
+                        ft_voice.remove(voiceFregment);
 
                     }
                     FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -351,6 +373,16 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                     fragmentTransaction.add(R.id.message_frame, faceFragment);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                } else if (voiceFregment.isVisible()) {
+                    fm.popBackStack();
+                    if (ft_voice != null) {
+                        ft_voice.remove(voiceFregment);
+
+                    }
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                    fragmentTransaction.add(R.id.message_frame, faceFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 } else {
                     ft_face = fm.beginTransaction();
                     ft_face.add(R.id.message_frame, faceFragment);
@@ -358,6 +390,42 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                     ft_face.commit();
                 }
             }
+        } else if (res == R.id.message_yuyin) {
+            FragmentManager fm = getSupportFragmentManager();
+            if (voiceFregment.isVisible()) {
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.remove(voiceFregment);
+                ft.commit();
+                fm.popBackStack();
+            } else {
+                if (imgFragment.isVisible()) {
+                    fm.popBackStack();
+                    if (ft_img != null) {
+                        ft_img.remove(imgFragment);
+                    }
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                    fragmentTransaction.add(R.id.message_frame, voiceFregment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else if (faceFragment.isVisible()) {
+                    fm.popBackStack();
+                    if (ft_face != null) {
+                        ft_face.remove(faceFragment);
+
+                    }
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                    fragmentTransaction.add(R.id.message_frame, voiceFregment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else {
+                    ft_voice = fm.beginTransaction();
+                    ft_voice.add(R.id.message_frame, voiceFregment);
+                    ft_voice.addToBackStack(null);
+                    ft_voice.commit();
+                }
+            }
         }
+
+
     }
 }

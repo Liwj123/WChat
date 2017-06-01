@@ -1,5 +1,7 @@
 package com.example.lenovo.wchat.act;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.SPUtil;
@@ -38,7 +41,15 @@ public class MainActivity extends AppCompatActivity implements EMMessageListener
     private ChatListFragment chat;
     private TabLayout tabLayout;
     private String[] title = {"消息", "联系人", "其他"};
-    private static  Map<String,String> text;
+    private static Map<String, String> text;
+    private static int BACK = 0;
+    private static final int SEND_TIME = 3000;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            BACK = 0;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,17 +70,17 @@ public class MainActivity extends AppCompatActivity implements EMMessageListener
 
     }
 
-    public Map<String,String> getDeffFromSp() {
+    public Map<String, String> getDeffFromSp() {
         //调用sp工具类中的方法得到sp中的文本
         String json = SPUtil.getChatDeff(MainActivity.this);
         //实例化gson对象用来解析json字符串
         Gson gson = new Gson();
         //创建type对象用来接收字符串中的文本信息
-        Type type = new TypeToken<Map<String,String>>() {
+        Type type = new TypeToken<Map<String, String>>() {
         }.getType();
         //解析
         text = gson.fromJson(json, type);
-        Log.e("json",text.toString());
+        Log.e("json", text.toString());
         return text;
 
     }
@@ -168,8 +179,10 @@ public class MainActivity extends AppCompatActivity implements EMMessageListener
 
 
     //添加消息监听
+
     /**
      * 当收到消息时
+     *
      * @param list
      */
     @Override
@@ -246,5 +259,17 @@ public class MainActivity extends AppCompatActivity implements EMMessageListener
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (BACK < 1) {
+            BACK++;
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            handler.sendEmptyMessageDelayed(1,SEND_TIME);
+        } else {
+            BACK = 0;
+            super.onBackPressed();
+        }
     }
 }

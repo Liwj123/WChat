@@ -102,7 +102,7 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
                 super.onDraw(c, parent, state);
                 Paint paint = new Paint();
-                paint.setColor(Color.BLUE);
+                paint.setColor(Color.GRAY);
                 int left = parent.getPaddingLeft();
                 int right = parent.getMeasuredWidth() - parent.getPaddingRight();
                 int size = parent.getChildCount();
