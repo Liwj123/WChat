@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
@@ -50,19 +51,14 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
     private RecyclerView recyclerView;
     private ArrayList<EMConversation> list = new ArrayList<>();
     private RecyclerAdapter adapter;
-    private Map<String, String> text;
+    private Map<String, String> text = new HashMap<>();
     private SwipeRefreshLayout refresh;
+    private Gson gson = new Gson();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chat, null);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        text = ((MainActivity) getActivity()).getDeffFromSp();
-        super.onAttach(context);
     }
 
     @Override
@@ -73,10 +69,26 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
         //使用消息管理者，调用消息列表的接口对象实现消息的刷新
         MessageManager.getInstance().setiMessageList(this);
 
+        getDeffFromSP();
 
         super.onViewCreated(view, savedInstanceState);
     }
 
+    private void getDeffFromSP() {
+        // 从SP中取得草稿json
+        String json = SPUtil.getChatDeff(getActivity());
+        // json 转 数据
+        Type types = new TypeToken<ArrayList<DeffStringBean>>() {
+        }.getType();
+        ArrayList<DeffStringBean> jsonArr = gson.fromJson(json, types);
+        if (jsonArr == null)
+            return;
+        //把list的数据给map
+        for (DeffStringBean d :
+                jsonArr) {
+            text.put(d.getKey(), d.getDeff());
+        }
+    }
 
     private void getChatList() {
         Map<String, EMConversation> map =
@@ -188,7 +200,25 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
     }
 
     private void saveDeff() {
-        String json = new Gson().toJson(text);
+        // 把 草稿 Map集合 转成 List集合
+        List<DeffStringBean> deffs = new ArrayList<>();
+        // 拿到 map集合中的  key集合
+        Iterator<String> keys = text.keySet().iterator();
+        // 遍历 key集合
+        while (keys.hasNext()) {
+            // 拿到每一次的key的值
+            String keyC = keys.next();
+            // 通过key的值 从map集合中取到相应的value
+            // 并 设置给 实体类
+            DeffStringBean deffStringBean = new DeffStringBean();
+            deffStringBean.setDeff(text.get(keyC));
+            deffStringBean.setKey(keyC);
+            // 把 实体类添加到 list集合中
+            deffs.add(deffStringBean);
+        }
+        // 把 实体类集合 转成json字符串
+        String json = gson.toJson(deffs);
+        // 把 json字符串 存到 SP中
         SPUtil.setChatDeff(getActivity(), json);
     }
 

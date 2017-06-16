@@ -1,11 +1,13 @@
 package com.example.lenovo.wchat.holder;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.Utils.StringUtil;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -31,21 +33,21 @@ public class TextHolder extends RecyclerView.ViewHolder {
         right_rl = itemView.findViewById(R.id.item_message_right_rl);
     }
 
-    public void setView(EMMessage msg) {
+    public void setView(Context context, EMMessage msg) {
         //判断发送消息的人
         if (msg.getFrom().equals(EMClient.getInstance().getCurrentUser())) {
             right_rl.setVisibility(View.VISIBLE);
             left_rl.setVisibility(View.GONE);
             if (msg.getType() == EMMessage.Type.TXT) {
                 EMTextMessageBody txtMsg = (EMTextMessageBody) msg.getBody();
-                message_right_message.setText(txtMsg.getMessage());
+                message_right_message.setText(StringUtil.getExpressionString(context,txtMsg.getMessage()));
             }
         } else {
             left_rl.setVisibility(View.VISIBLE);
             right_rl.setVisibility(View.GONE);
             if (msg.getType() == EMMessage.Type.TXT) {
                 EMTextMessageBody txtMsg = (EMTextMessageBody) msg.getBody();
-                message_left_message.setText(txtMsg.getMessage());
+                message_left_message.setText(StringUtil.getExpressionString(context,txtMsg.getMessage()));
             }
         }
     }

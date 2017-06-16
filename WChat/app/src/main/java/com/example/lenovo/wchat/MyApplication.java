@@ -2,6 +2,7 @@ package com.example.lenovo.wchat;
 
 import android.app.Application;
 
+import com.example.lenovo.wchat.Utils.StringUtil;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
@@ -15,6 +16,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         initEMsdk();
+        StringUtil.list2Map();
     }
 
     private void initEMsdk() {

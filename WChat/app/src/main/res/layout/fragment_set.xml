@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/set_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:hint="请输入要发送的账号" />
+        <EditText
+            android:id="@+id/set_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:hint="请输入要发送的账号" />
 
-    <EditText
-        android:id="@+id/set_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/set_number"
-        android:layout_margin="20dp"
-        android:hint="请输入要发送的信息" />
+        <EditText
+            android:id="@+id/set_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:hint="请输入要发送的信息" />
 
-    <Button
-        android:id="@+id/set_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/set_text"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="190dp"
-        android:layout_marginTop="10dp"
-        android:text="发送" />
+        <Button
+            android:id="@+id/set_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="发送" />
 
-    <Button
-        android:id="@+id/set_logout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/set_send"
-        android:layout_margin="30dp"
-        android:background="@drawable/logout"
-        android:text="退出登录"
-        android:textColor="#ffffff" />
-</RelativeLayout>
+        <Button
+            android:id="@+id/set_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:background="@drawable/logout"
+            android:text="退出登录"
+            android:textColor="#ffffff" />
+</LinearLayout>

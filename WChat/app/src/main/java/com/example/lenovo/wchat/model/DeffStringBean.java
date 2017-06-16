@@ -8,6 +8,14 @@ public class DeffStringBean {
     private String key;
     private String deff;
 
+    public DeffStringBean(String key, String deff) {
+        this.key = key;
+        this.deff = deff;
+    }
+
+    public DeffStringBean() {
+    }
+
     public String getKey() {
         return key;
     }

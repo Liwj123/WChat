@@ -1,13 +1,20 @@
 package com.example.lenovo.wchat.act;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -17,25 +24,32 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.Utils.StringUtil;
 import com.example.lenovo.wchat.adapter.MessageAdapter;
+import com.example.lenovo.wchat.fragment.BaseFragment;
 import com.example.lenovo.wchat.fragment.FaceFragment;
 import com.example.lenovo.wchat.fragment.ImageFragment;
 import com.example.lenovo.wchat.fragment.VoiceFregment;
 import com.example.lenovo.wchat.manager.MessageManager;
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.bitmap;
+import static com.hyphenate.chat.a.a.a.c;
 
 /**
  * Created by Lenovo on 2017/5/8.
@@ -45,17 +59,18 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
 
     private String name;
     private RecyclerView recycler_message;
-    private EditText et_message;
+    public EditText et_message;
     private Button send_Message;
-    private List<EMMessage> messages;
+    private List<EMMessage> messages = new ArrayList<>();
     private MessageAdapter ma;
     private String txt;
     private String caogao;
     private LinearLayoutManager llm;
-    private ImageView yuyin, img, biaoqing, add;
+    private ImageView yuyin, img, biaoqing, video;
     private ImageFragment imgFragment;
     private FaceFragment faceFragment;
     private VoiceFregment voiceFregment;
+    private BaseFragment currFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,22 +92,35 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     }
 
     private List<EMMessage> getList() {
-        //获取会话对象
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(name);
-        List<EMMessage> msg = conversation.getAllMessages();
-        //标记所有消息为已读
+        EMConversation conversation = EMClient
+                .getInstance()
+                .chatManager()
+                .getConversation(name);
+        // 标记所有消息为已读
         conversation.markAllMessagesAsRead();
-        //如果会话消息个数为1 ，尝试从数据库中再获取19条
-        if (msg.size() == 1) {
-            conversation.loadMoreMsgFromDB(msg.get(0).getMsgId(), 19);
+
+        // 从会话对象中获取所有消息
+        ArrayList<EMMessage> msgList = (ArrayList<EMMessage>) conversation
+                .getAllMessages();
+
+        // 如果 会话中的消息个数为1  尝试从数据库中再获取19条
+        // 要求 最终 消息列表中要有 20条消息
+        if (msgList.size() == 1) {
+            conversation.loadMoreMsgFromDB(msgList.get(0).getMsgId(), 19);
         }
-        return conversation.getAllMessages();
+
+        //获取此会话的所有消息
+        return conversation
+                .getAllMessages();
     }
 
     private void setTestStr() {
-        et_message.setText(caogao);
-        et_message.setSelection(et_message.getText().length());
+        if (!TextUtils.isEmpty(caogao)) {
+            et_message.setText(StringUtil.getExpressionString(this, caogao));
+            et_message.setSelection(et_message.getText().length());
+        }
     }
+
 
     //设置recyclerView的适配
     private void initAdapter() {
@@ -112,7 +140,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         yuyin = (ImageView) findViewById(R.id.message_yuyin);
         img = (ImageView) findViewById(R.id.message_img);
         biaoqing = (ImageView) findViewById(R.id.message_biaoqing);
-        add = (ImageView) findViewById(R.id.message_add);
+        video = (ImageView) findViewById(R.id.message_video);
         imgFragment = new ImageFragment();
         faceFragment = new FaceFragment();
         voiceFregment = new VoiceFregment();
@@ -121,7 +149,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         yuyin.setOnClickListener(this);
         img.setOnClickListener(this);
         biaoqing.setOnClickListener(this);
-        add.setOnClickListener(this);
+        video.setOnClickListener(this);
         send_Message.setOnClickListener(this);
 
         recycler_message.setOnTouchListener(new View.OnTouchListener() {
@@ -130,6 +158,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE:
                         hideKeyBoard();
+                        closeFragment();
                         break;
                 }
                 return false;
@@ -197,12 +226,28 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     //点击返回键调用的方法
     @Override
     public void onBackPressed() {
+        if (closeFragment()) return;
+        setResult();
+    }
+
+    private boolean closeFragment() {
+        if (currFragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(currFragment)
+                    .commit();
+            currFragment = null;
+            return true;
+        }
+        return false;
+    }
+
+    private void setResult() {
         Intent data = new Intent();
         data.putExtra("user", name);
         data.putExtra("txt", txt);
         setResult(RESULT_OK, data);
         Log.v("map", txt + "-------------" + name);
-        //清空该fragment的返回栈
         super.onBackPressed();
     }
 
@@ -211,8 +256,12 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messages.addAll(list);
-                ma.notifyDataSetChanged();
+                EMMessage emMessage = list.get(0);
+                if(emMessage.getFrom().equals(name)){
+                    messages.addAll(list);
+                    ma.notifyDataSetChanged();
+                }
+                MessageManager.getInstance().getiMessageList().refChatList();
             }
         });
     }
@@ -256,8 +305,8 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         txt = "";
     }
 
-    public void createVoice(String path, File file) {
-        EMMessage msg = EMMessage.createVoiceSendMessage(path, (int) file.length(), name);
+    public void createVoice(String path, int time) {
+        EMMessage msg = EMMessage.createVoiceSendMessage(path, time, name);
         sendMessage(msg);
     }
 
@@ -271,6 +320,24 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
 
         //实现在消息界面刷新消息列表
         MessageManager.getInstance().getiMessageList().refChatList();
+        //发送消息监听
+        msg.setMessageStatusCallback(new EMCallBack() {
+            //发送成功的监听
+            @Override
+            public void onSuccess() {
+                Log.e("message", "onSuccess");
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+
+            @Override
+            public void onProgress(int i, String s) {
+
+            }
+        });
     }
 
 
@@ -287,20 +354,23 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                 }
                 break;
             case R.id.message_yuyin:
-                openCloseFrame(R.id.message_yuyin);
+                openCloseFrame(voiceFregment);
                 hideKeyBoard();
                 break;
             case R.id.message_img:
-                openCloseFrame(R.id.message_img);
+                openCloseFrame(imgFragment);
                 //点击图片图标是将软键盘收起
                 hideKeyBoard();
                 break;
             case R.id.message_biaoqing:
-                openCloseFrame(R.id.message_biaoqing);
+                openCloseFrame(faceFragment);
                 hideKeyBoard();
                 break;
-            case R.id.message_add:
-
+            case R.id.message_video:
+                //调用系统的摄像功能
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                startActivityForResult(intent, 1010);
+                hideKeyBoard();
                 break;
         }
     }
@@ -317,115 +387,131 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     /**
      * 打开关闭 图片fragment
      */
-    private void openCloseFrame(int res) {
-        FragmentTransaction ft_img = null;
-        FragmentTransaction ft_face = null;
-        FragmentTransaction ft_voice = null;
-        if (res == R.id.message_img) {
-            FragmentManager fm = getSupportFragmentManager();
-            if (imgFragment.isVisible()) {
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.remove(imgFragment);
-                ft.commit();
-                fm.popBackStack();
-            } else {
-                if (faceFragment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_face != null) {
-                        ft_face.remove(faceFragment);
+    private void openCloseFrame(BaseFragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fragment.isVisible()) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.remove(fragment);
+            ft.commit();
+            currFragment = null;
+        } else {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.message_frame, fragment);
+            ft.commit();
+            currFragment = fragment;
+        }
+    }
 
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, imgFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else if (voiceFregment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_voice != null) {
-                        ft_voice.remove(voiceFregment);
+    /**
+     * 得到摄像后的数据
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        createVideo(data);
+    }
 
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, imgFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else {
-                    ft_img = fm.beginTransaction();
-                    ft_img.add(R.id.message_frame, imgFragment);
-                    ft_img.addToBackStack(null);
-                    ft_img.commit();
-                }
-            }
-        } else if (res == R.id.message_biaoqing) {
-            FragmentManager fm = getSupportFragmentManager();
-            if (faceFragment.isVisible()) {
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.remove(faceFragment);
-                ft.commit();
-                fm.popBackStack();
-            } else {
-                if (imgFragment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_img != null) {
-                        ft_img.remove(imgFragment);
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, faceFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else if (voiceFregment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_voice != null) {
-                        ft_voice.remove(voiceFregment);
+    private void createVideo(Intent data) {
+        String videoPath = getVideoPath(data);
+        int videoTiem = getVideoTime(videoPath);
+        File file = getVideoImg(videoPath);
+        EMMessage msg = EMMessage.createVideoSendMessage(videoPath
+                , file.getAbsolutePath()
+                , videoTiem
+                , name);
+        sendMessage(msg);
+    }
 
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, faceFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else {
-                    ft_face = fm.beginTransaction();
-                    ft_face.add(R.id.message_frame, faceFragment);
-                    ft_face.addToBackStack(null);
-                    ft_face.commit();
-                }
-            }
-        } else if (res == R.id.message_yuyin) {
-            FragmentManager fm = getSupportFragmentManager();
-            if (voiceFregment.isVisible()) {
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.remove(voiceFregment);
-                ft.commit();
-                fm.popBackStack();
-            } else {
-                if (imgFragment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_img != null) {
-                        ft_img.remove(imgFragment);
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, voiceFregment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else if (faceFragment.isVisible()) {
-                    fm.popBackStack();
-                    if (ft_face != null) {
-                        ft_face.remove(faceFragment);
+    /**
+     * 得到视频的第一张图片
+     *
+     * @param videoPath
+     * @return
+     */
+    private File getVideoImg(String videoPath) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(videoPath);
+        Bitmap bitmap = mmr.getFrameAtTime(1000);
 
-                    }
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.add(R.id.message_frame, voiceFregment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                } else {
-                    ft_voice = fm.beginTransaction();
-                    ft_voice.add(R.id.message_frame, voiceFregment);
-                    ft_voice.addToBackStack(null);
-                    ft_voice.commit();
-                }
+        String videoImgPath = "/" + System.currentTimeMillis() + ".jpg";
+        File file = new File(Environment.getExternalStorageDirectory()
+                , videoImgPath);
+
+        if (file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG
+                    , 50
+                    , fileOutputStream);
+            try {
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                bitmap.recycle();
+                bitmap = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
 
+    /**
+     * 得到视频的时间
+     *
+     * @param videoPath
+     * @return
+     */
+    private int getVideoTime(String videoPath) {
+        int videoTiem = 0;
+        MediaPlayer player = new MediaPlayer();
+        try {
+            player.setDataSource(videoPath);
+            videoTiem = player.getDuration();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        player.reset();
+        player.release();
+        player = null;
+        return videoTiem;
+    }
+
+    /**
+     * 得到视频的存储路径
+     *
+     * @param data
+     * @return
+     */
+    private String getVideoPath(Intent data) {
+        String videoPath = null;
+        Cursor c = managedQuery(data.getData()
+                , new String[]{MediaStore.Video.Media.DATA}
+                , null
+                , null
+                , null);
+
+        if (c != null) {
+            if (c.moveToNext()) {
+                int index = c.getColumnIndex(MediaStore.Video.Media.DATA);
+                videoPath = c.getString(index);
+            }
+        }
+        return videoPath;
     }
 }

@@ -23,18 +23,27 @@
             android:src="@mipmap/ic_launcher" />
 
         <RelativeLayout
-            android:layout_toEndOf="@id/item_message_left_head"
+            android:id="@+id/item_video_left"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/item_message_left_head">
+
             <ImageView
                 android:id="@+id/item_message_left_message"
-                android:layout_width="190dp"
-                android:layout_height="260dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:background="@drawable/xiaoxi"
                 android:maxWidth="280dp"
-                android:src="@mipmap/ic_launcher"
+                android:padding="3dp"
+                android:src="@mipmap/gg"
                 android:textSize="17sp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/player" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -52,19 +61,26 @@
             android:src="@mipmap/ic_launcher" />
 
         <RelativeLayout
+            android:id="@+id/item_video_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@id/item_message_right_head">
 
             <ImageView
                 android:id="@+id/item_message_right_message"
-                android:layout_width="190dp"
-                android:layout_height="260dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@drawable/xiaoxi"
                 android:maxWidth="280dp"
                 android:padding="3dp"
-                android:src="@mipmap/ic_launcher"
+                android:src="@mipmap/gg"
                 android:textSize="17sp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/player" />
         </RelativeLayout>
     </RelativeLayout>
 

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.Utils.StringUtil;
 import com.example.lenovo.wchat.callback.RecyclerViewClick;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
@@ -87,13 +88,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             case TXT:
                 EMTextMessageBody txtMsg = (EMTextMessageBody) lastMsg.getBody();
                 //消息内容
-                holder.chat.setText(txtMsg.getMessage());
+                holder.chat.setText(StringUtil.getExpressionString(context, txtMsg.getMessage()));
                 break;
             case IMAGE:
                 holder.chat.setText("[图片]");
                 break;
             case VIDEO:
                 holder.chat.setText("[视频]");
+                break;
+            case VOICE:
+                holder.chat.setText("[语音]");
                 break;
         }
 

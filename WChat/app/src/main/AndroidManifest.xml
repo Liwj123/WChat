@@ -84,6 +84,9 @@
         <activity
             android:name=".act.MessageActivity"
             android:launchMode="singleTop"></activity>
+        <activity
+            android:name=".act.VideoPlayActivity"
+            android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>

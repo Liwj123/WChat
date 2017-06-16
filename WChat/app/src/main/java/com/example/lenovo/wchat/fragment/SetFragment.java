@@ -21,7 +21,7 @@ import com.hyphenate.chat.EMMessage;
 
 public class SetFragment extends BaseFragment implements View.OnClickListener {
 
-    private EditText number,text;
+    private EditText number, text;
     private Button send, logout;
 
     @Nullable
@@ -48,17 +48,18 @@ public class SetFragment extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.set_logout:
                 EMClient.getInstance().logout(true);
                 ((MainActivity) getActivity()).finish();
+                ((MainActivity) getActivity()).intentToLogin();
                 break;
             case R.id.set_send:
                 String num = number.getText().toString();
                 String txt = text.getText().toString();
-                if(TextUtils.isEmpty(txt) && TextUtils.isEmpty(num)){
+                if (TextUtils.isEmpty(txt) && TextUtils.isEmpty(num)) {
 
-                }else{
+                } else {
                     EMMessage msg = EMMessage.createTxtSendMessage(txt, num);
                     msg.setChatType(EMMessage.ChatType.Chat);
                     EMClient.getInstance().chatManager().sendMessage(msg);

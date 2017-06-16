@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.holder.ImageHolder;
 import com.example.lenovo.wchat.holder.TextHolder;
+import com.example.lenovo.wchat.holder.VideoHolder;
+import com.example.lenovo.wchat.holder.VoiceHolder;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -46,7 +48,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             case 1:
                 return new ImageHolder(LayoutInflater.from(context).inflate(R.layout.item_recycler_image, parent, false));
             case 2:
-                break;
+                return new VideoHolder(LayoutInflater.from(context).inflate(R.layout.item_recycler_video, parent, false));
+            case 3:
+                return new VoiceHolder(LayoutInflater.from(context).inflate(R.layout.item_recycler_voice, parent, false));
         }
         return new TextHolder(LayoutInflater.from(context).inflate(R.layout.item_recycler_message, parent, false));
     }
@@ -67,6 +71,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 return 1;
             case VIDEO:
                 return 2;
+            case VOICE:
+                return 3;
         }
         return -1;
     }
@@ -84,9 +90,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
         //判断当前holder是什么类型
         if (holder instanceof TextHolder) {
             //强转并调用设置数据的方法
-            ((TextHolder) holder).setView(msg);
+            ((TextHolder) holder).setView(context, msg);
         } else if (holder instanceof ImageHolder) {
             ((ImageHolder) holder).setView(context, msg);
+        } else if (holder instanceof VoiceHolder) {
+            ((VoiceHolder) holder).setView(context, msg);
+        } else if (holder instanceof VideoHolder) {
+            ((VideoHolder) holder).setView(context, msg);
         }
     }
 

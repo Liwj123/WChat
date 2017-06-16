@@ -30,6 +30,7 @@
             android:layout_toEndOf="@id/item_message_left_head"
             android:background="@drawable/xiaoxi"
             android:maxWidth="280dp"
+            android:padding="6dp"
             android:textSize="17sp" />
     </RelativeLayout>
 
@@ -54,7 +55,7 @@
             android:layout_toStartOf="@id/item_message_right_head"
             android:background="@drawable/xiaoxi"
             android:maxWidth="280dp"
-            android:padding="3dp"
+            android:padding="6dp"
             android:text="dsjfdshgfjdsfhhafvdsjhffdvfdsvfsdfsdfds"
             android:textSize="17sp" />
     </RelativeLayout>

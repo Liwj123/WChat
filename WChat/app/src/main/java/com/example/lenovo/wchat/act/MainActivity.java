@@ -8,40 +8,32 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.lenovo.wchat.R;
-import com.example.lenovo.wchat.Utils.SPUtil;
-import com.example.lenovo.wchat.adapter.RecyclerAdapter;
 import com.example.lenovo.wchat.fragment.BaseFragment;
 import com.example.lenovo.wchat.fragment.ChatListFragment;
 import com.example.lenovo.wchat.fragment.ContactFragment;
 import com.example.lenovo.wchat.fragment.SetFragment;
-import com.example.lenovo.wchat.model.DeffStringBean;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements EMMessageListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends BaseActivity implements EMMessageListener, ViewPager.OnPageChangeListener {
 
     private ViewPager viewPager;
     private List<BaseFragment> list = new ArrayList<>();
     private ChatListFragment chat;
     private TabLayout tabLayout;
     private String[] title = {"消息", "联系人", "其他"};
-    private static Map<String, String> text;
+    private static Map<String, String> text = new HashMap<>();
     private static int BACK = 0;
     private static final int SEND_TIME = 3000;
     private Handler handler = new Handler(){
@@ -65,25 +57,9 @@ public class MainActivity extends AppCompatActivity implements EMMessageListener
         //加载视图的方法
         initView();
 
-        //将sp文件中的json字符串取出赋值给map集合
-        getDeffFromSp();
 
     }
 
-    public Map<String, String> getDeffFromSp() {
-        //调用sp工具类中的方法得到sp中的文本
-        String json = SPUtil.getChatDeff(MainActivity.this);
-        //实例化gson对象用来解析json字符串
-        Gson gson = new Gson();
-        //创建type对象用来接收字符串中的文本信息
-        Type type = new TypeToken<Map<String, String>>() {
-        }.getType();
-        //解析
-        text = gson.fromJson(json, type);
-        Log.e("json", text.toString());
-        return text;
-
-    }
 
     private void initView() {
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
