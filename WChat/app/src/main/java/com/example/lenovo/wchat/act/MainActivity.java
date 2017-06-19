@@ -17,6 +17,7 @@ import com.example.lenovo.wchat.fragment.BaseFragment;
 import com.example.lenovo.wchat.fragment.ChatListFragment;
 import com.example.lenovo.wchat.fragment.ContactFragment;
 import com.example.lenovo.wchat.fragment.SetFragment;
+import com.hyphenate.EMGroupChangeListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
@@ -57,7 +58,70 @@ public class MainActivity extends BaseActivity implements EMMessageListener, Vie
         //加载视图的方法
         initView();
 
+        GroupListener();
 
+    }
+
+    /**
+     * 群组状态监听
+     */
+    private void GroupListener() {
+        EMClient.getInstance().groupManager().addGroupChangeListener(new EMGroupChangeListener() {
+
+            //接收到群组加入邀请
+            @Override
+            public void onInvitationReceived(String s, String s1, String s2, String s3) {
+
+            }
+
+            //群聊被创建者解散
+            @Override
+            public void onApplicationReceived(String s, String s1, String s2, String s3) {
+
+            }
+
+            //收到加群申请
+            @Override
+            public void onApplicationAccept(String s, String s1, String s2) {
+
+            }
+
+            //加群申请被同意
+            @Override
+            public void onApplicationDeclined(String s, String s1, String s2, String s3) {
+
+            }
+
+            //加群申请被拒绝
+            @Override
+            public void onInvitationAccepted(String s, String s1, String s2) {
+
+            }
+
+            //收到加入群聊的邀请
+            @Override
+            public void onInvitationDeclined(String s, String s1, String s2) {
+
+            }
+
+            //群聊邀请被拒绝
+            @Override
+            public void onUserRemoved(String s, String s1) {
+
+            }
+
+            //群聊被解散
+            @Override
+            public void onGroupDestroyed(String s, String s1) {
+
+            }
+
+            //群组邀请被拒绝
+            @Override
+            public void onAutoAcceptInvitationFromGroup(String s, String s1, String s2) {
+
+            }
+        });
     }
 
 
@@ -248,4 +312,6 @@ public class MainActivity extends BaseActivity implements EMMessageListener, Vie
             super.onBackPressed();
         }
     }
+
+
 }

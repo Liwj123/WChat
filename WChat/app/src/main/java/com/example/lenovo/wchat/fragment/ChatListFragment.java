@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.SPUtil;
+import com.example.lenovo.wchat.act.GroupMessageActivity;
 import com.example.lenovo.wchat.act.MainActivity;
 import com.example.lenovo.wchat.act.MessageActivity;
 import com.example.lenovo.wchat.callback.IMessageList;
@@ -30,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static android.R.attr.type;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -48,6 +51,7 @@ import static android.app.Activity.RESULT_OK;
 public class ChatListFragment extends BaseFragment implements IMessageList {
 
     public static final int REQUEST_CODE = 101;
+    public static final int REQUEST_CODE_GROUP = 102;
     private RecyclerView recyclerView;
     private ArrayList<EMConversation> list = new ArrayList<>();
     private RecyclerAdapter adapter;
@@ -97,6 +101,7 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
         Iterator<EMConversation> it = values.iterator();
         while (it.hasNext()) {
             list.add(it.next());
+
         }
     }
 
@@ -151,7 +156,14 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
             @Override
             public void onClickListener(int index) {
                 //Toast.makeText(getActivity(), "点了" + index, Toast.LENGTH_SHORT).show();
-                intentToMessage(list.get(index).getUserName());
+                EMConversation.EMConversationType type = list.get(index).getType();
+                if (type == EMConversation.EMConversationType.Chat) {
+                    intentToMessage(list.get(index).getUserName());
+                } else if (type == EMConversation.EMConversationType.GroupChat) {
+                    String groupId = EMClient.getInstance().groupManager().getGroup(list.get(index).getLastMessage().getTo()).getGroupId();
+                    String groupName = EMClient.getInstance().groupManager().getGroup(list.get(index).getLastMessage().getTo()).getGroupName();
+                    intentToMessage(groupId, groupName);
+                }
             }
 
             @Override
@@ -169,6 +181,14 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
+    public void intentToMessage(String groupId, String groupName) {
+        Intent intent = new Intent(getActivity(), GroupMessageActivity.class);
+        intent.putExtra("groupId", groupId);
+        intent.putExtra("groupName", groupName);
+        intent.putExtra("caogao", text.get(groupId));
+        startActivityForResult(intent, REQUEST_CODE_GROUP);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -177,6 +197,12 @@ public class ChatListFragment extends BaseFragment implements IMessageList {
             //判断请求码   requestCode
             switch (requestCode) {
                 case REQUEST_CODE:
+                    //得到消息界面的草稿信息
+                    getDeff(data);
+                    //将草稿存入sp文件中
+                    saveDeff();
+                    break;
+                case REQUEST_CODE_GROUP:
                     //得到消息界面的草稿信息
                     getDeff(data);
                     //将草稿存入sp文件中

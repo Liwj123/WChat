@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.TimerUtil;
+import com.example.lenovo.wchat.act.GroupMessageActivity;
 import com.example.lenovo.wchat.act.MessageActivity;
 
 import java.io.File;
@@ -75,7 +76,13 @@ public class VoiceFregment extends BaseFragment {
                         handler.removeMessages(1);
                         time.setText("按下后开始录音");
                         if (voiceTime > 0) {
-                            ((MessageActivity) getActivity()).createVoice(VOICE_PATH, voiceTime);
+                            if (getActivity() instanceof MessageActivity) {
+                                MessageActivity ma = (MessageActivity) getActivity();
+                                ma.sendVoice(VOICE_PATH, voiceTime);
+                            } else if (getActivity() instanceof GroupMessageActivity) {
+                                GroupMessageActivity gma = (GroupMessageActivity) getActivity();
+                                gma.sendVoice(VOICE_PATH, voiceTime);
+                            }
                         } else {
                             Toast.makeText(getActivity(), "按键时间太短", Toast.LENGTH_SHORT).show();
                         }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.act.GroupMessageActivity;
 import com.example.lenovo.wchat.act.MessageActivity;
 import com.example.lenovo.wchat.adapter.ImageAdapter;
 
@@ -91,7 +92,9 @@ public class ImageFragment extends BaseFragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         //拿到容器activity的对象
-        MessageActivity ma = (MessageActivity) getActivity();
+
+
+
         //获取选中图片的数据
         HashSet<String> paths = adapter.getPaths();
         //遍历set集合
@@ -99,7 +102,15 @@ public class ImageFragment extends BaseFragment implements View.OnClickListener 
         //遍历集合，将以存入的图片路径传入发送图片的方法中
         while (iterator.hasNext()) {
             String path = iterator.next();
-            ma.createImage(path);
+            if(getActivity() instanceof MessageActivity){
+                MessageActivity ma = (MessageActivity) getActivity();
+                ma.sendImg(path);
+            }else if(getActivity() instanceof GroupMessageActivity){
+                GroupMessageActivity gma = (GroupMessageActivity)getActivity();
+                gma.sendImg(path);
+            }
+
+
         }
         adapter.refresh();
     }

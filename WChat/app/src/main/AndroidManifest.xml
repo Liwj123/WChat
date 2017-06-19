@@ -74,19 +74,24 @@
         <activity
             android:name=".act.LoginActivity"
             android:label="@string/title_activity_login"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
         <activity
             android:name=".act.MainActivity"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
         <activity
             android:name=".act.RegisterActivity"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
         <activity
             android:name=".act.MessageActivity"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".act.VideoPlayActivity"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".act.GroupListActivity"
+            android:launchMode="singleTop" />
+        <activity android:name=".act.CreateGroupActivity" />
+        <activity android:name=".act.GroupMessageActivity"></activity>
     </application>
 
 </manifest>

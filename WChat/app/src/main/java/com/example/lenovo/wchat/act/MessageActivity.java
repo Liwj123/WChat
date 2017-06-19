@@ -92,6 +92,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     }
 
     private List<EMMessage> getList() {
+        //根据用户名查询聊天消息
         EMConversation conversation = EMClient
                 .getInstance()
                 .chatManager()
@@ -257,7 +258,7 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
             @Override
             public void run() {
                 EMMessage emMessage = list.get(0);
-                if(emMessage.getFrom().equals(name)){
+                if (emMessage.getFrom().equals(name)) {
                     messages.addAll(list);
                     ma.notifyDataSetChanged();
                 }
@@ -292,55 +293,6 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
         EMClient.getInstance().chatManager().removeMessageListener(this);
     }
 
-    //创建图片信息并发送
-    public void createImage(String path) {
-        EMMessage msg = EMMessage.createImageSendMessage(path, false, name);
-        sendMessage(msg);
-    }
-
-    //创建文本信息并发送
-    public void createTxt(String content) {
-        EMMessage msg = EMMessage.createTxtSendMessage(content, name);
-        sendMessage(msg);
-        txt = "";
-    }
-
-    public void createVoice(String path, int time) {
-        EMMessage msg = EMMessage.createVoiceSendMessage(path, time, name);
-        sendMessage(msg);
-    }
-
-    //发送消息
-    private void sendMessage(EMMessage msg) {
-        msg.setChatType(EMMessage.ChatType.Chat);
-        EMClient.getInstance().chatManager().sendMessage(msg);
-        messages.add(msg);
-        ma.notifyDataSetChanged();
-        recycler_message.scrollToPosition(messages.size() - 1);
-
-        //实现在消息界面刷新消息列表
-        MessageManager.getInstance().getiMessageList().refChatList();
-        //发送消息监听
-        msg.setMessageStatusCallback(new EMCallBack() {
-            //发送成功的监听
-            @Override
-            public void onSuccess() {
-                Log.e("message", "onSuccess");
-            }
-
-            @Override
-            public void onError(int i, String s) {
-
-            }
-
-            @Override
-            public void onProgress(int i, String s) {
-
-            }
-        });
-    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -349,7 +301,8 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
                 if (message.equals("")) {
 
                 } else {
-                    createTxt(message);
+                    EMMessage msg = MessageManager.getInstance().createTxt(message, name,EMMessage.ChatType.Chat);
+                    notifyMsg(msg);
                     et_message.setText("");
                 }
                 break;
@@ -412,106 +365,31 @@ public class MessageActivity extends BaseActivity implements EMMessageListener, 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            return;
-        }
-        createVideo(data);
-    }
-
-    private void createVideo(Intent data) {
-        String videoPath = getVideoPath(data);
-        int videoTiem = getVideoTime(videoPath);
-        File file = getVideoImg(videoPath);
-        EMMessage msg = EMMessage.createVideoSendMessage(videoPath
-                , file.getAbsolutePath()
-                , videoTiem
-                , name);
-        sendMessage(msg);
-    }
-
-    /**
-     * 得到视频的第一张图片
-     *
-     * @param videoPath
-     * @return
-     */
-    private File getVideoImg(String videoPath) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(videoPath);
-        Bitmap bitmap = mmr.getFrameAtTime(1000);
-
-        String videoImgPath = "/" + System.currentTimeMillis() + ".jpg";
-        File file = new File(Environment.getExternalStorageDirectory()
-                , videoImgPath);
-
-        if (file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case 1010:
+                    EMMessage msg = MessageManager.getInstance().createVideo(this, data, name,EMMessage.ChatType.Chat);
+                    notifyMsg(msg);
+                    break;
             }
         }
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG
-                    , 50
-                    , fileOutputStream);
-            try {
-                fileOutputStream.flush();
-                fileOutputStream.close();
-                bitmap.recycle();
-                bitmap = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return file;
     }
 
-    /**
-     * 得到视频的时间
-     *
-     * @param videoPath
-     * @return
-     */
-    private int getVideoTime(String videoPath) {
-        int videoTiem = 0;
-        MediaPlayer player = new MediaPlayer();
-        try {
-            player.setDataSource(videoPath);
-            videoTiem = player.getDuration();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        player.reset();
-        player.release();
-        player = null;
-        return videoTiem;
+    private void notifyMsg(EMMessage msg) {
+        txt = "";
+        messages.add(msg);
+        ma.notifyDataSetChanged();
+        recycler_message.scrollToPosition(messages.size() - 1);
     }
 
-    /**
-     * 得到视频的存储路径
-     *
-     * @param data
-     * @return
-     */
-    private String getVideoPath(Intent data) {
-        String videoPath = null;
-        Cursor c = managedQuery(data.getData()
-                , new String[]{MediaStore.Video.Media.DATA}
-                , null
-                , null
-                , null);
-
-        if (c != null) {
-            if (c.moveToNext()) {
-                int index = c.getColumnIndex(MediaStore.Video.Media.DATA);
-                videoPath = c.getString(index);
-            }
-        }
-        return videoPath;
+    public void sendImg(String path) {
+        EMMessage msg = MessageManager.getInstance().createImage(path, name, EMMessage.ChatType.Chat);
+        notifyMsg(msg);
     }
+
+    public void sendVoice(String path, int time) {
+        EMMessage msg = MessageManager.getInstance().createVoice(path, time, name,EMMessage.ChatType.Chat);
+        notifyMsg(msg);
+    }
+
 }

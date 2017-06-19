@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee"
+    android:orientation="vertical" >
+    <EditText
+        android:id="@+id/group_create_name"
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/group_create"
+        android:hint="群聊名称"
+        android:paddingLeft="5dp"
+        android:singleLine="true"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/group_create_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/group_create"
+        android:gravity="top"
+        android:hint="群聊简介"
+        android:lines="5"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:textSize="18sp" />
+
+</LinearLayout>

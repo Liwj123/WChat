@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/contact_group"
+        android:id="@+id/group_list_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -15,15 +15,22 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/group" />
+            android:src="@mipmap/create_group" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="群聊"
-            android:textSize="18sp" />
+            android:text="创建群组"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/group_list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

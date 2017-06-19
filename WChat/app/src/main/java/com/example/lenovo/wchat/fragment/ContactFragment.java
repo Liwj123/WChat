@@ -1,5 +1,6 @@
 package com.example.lenovo.wchat.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lenovo.wchat.R;
+import com.example.lenovo.wchat.act.GroupListActivity;
 import com.example.lenovo.wchat.adapter.ContactAdapter;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
@@ -21,7 +23,7 @@ import java.util.List;
 
 public class ContactFragment extends BaseFragment {
 
-    private RecyclerView recycler;
+    private View group;
 
     @Nullable
     @Override
@@ -33,18 +35,17 @@ public class ContactFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
-        try {
-            List<String> list = EMClient.getInstance().contactManager().getAllContactsFromServer();
-            ContactAdapter adapter = new ContactAdapter(getActivity(),list);
-            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-            recycler.setLayoutManager(llm);
-            recycler.setAdapter(adapter);
-        } catch (HyphenateException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initView(View view) {
-        recycler  = (RecyclerView) view.findViewById(R.id.contact_recycler);
+        group = view.findViewById(R.id.contact_group);
+
+        group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), GroupListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

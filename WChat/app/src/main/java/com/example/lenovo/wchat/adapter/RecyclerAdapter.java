@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.StringUtil;
 import com.example.lenovo.wchat.callback.RecyclerViewClick;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -79,6 +80,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         EMConversation mData = list.get(position);
         //获得最后一条消息
         EMMessage lastMsg = mData.getLastMessage();
+        if (lastMsg == null) {
+            return;
+        }
         //获得消息类型
         EMMessage.Type type = lastMsg.getType();
         //获得消息时间
@@ -104,10 +108,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         //获得未读消息数
         int unread = mData.getUnreadMsgCount();
-        //会话名
-        String userName = mData.getUserName();
 
-        holder.name.setText(userName);
+        String userName = mData.getUserName();
+        EMConversation.EMConversationType messageType = list.get(position).getType();
+        if (messageType == EMConversation.EMConversationType.Chat) {
+            holder.name.setText(userName);
+        } else if (messageType == EMConversation.EMConversationType.GroupChat) {
+            String groupId = EMClient.getInstance().groupManager().getGroup(list.get(position).getLastMessage().getTo()).getGroupId();
+            String groupName = EMClient.getInstance().groupManager().getGroup(list.get(position).getLastMessage().getTo()).getGroupName();
+            holder.name.setText(groupName);
+        }
+
 
         if (unread > 99) {
             holder.info.setText("99+");
