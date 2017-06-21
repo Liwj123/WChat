@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.example.lenovo.wchat"
-        minSdkVersion 17
+        minSdkVersion 11
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"

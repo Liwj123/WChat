@@ -42,6 +42,8 @@ public class GroupListActivity extends BaseActivity implements IGroupList{
         getGroupList();
         initView();
 
+
+
     }
 
     /**

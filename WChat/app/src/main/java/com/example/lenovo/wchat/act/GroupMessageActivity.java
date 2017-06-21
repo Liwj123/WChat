@@ -12,12 +12,15 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.StringUtil;
@@ -35,7 +38,7 @@ import com.hyphenate.chat.EMMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupMessageActivity extends AppCompatActivity implements View.OnClickListener {
+public class GroupMessageActivity extends BaseActivity implements View.OnClickListener {
 
     private RecyclerView recycler_message;
     public EditText et_message;
@@ -346,4 +349,33 @@ public class GroupMessageActivity extends AppCompatActivity implements View.OnCl
             }
         }
     }
+
+    //加载menu的布局
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_message, menu);
+        return true;
+    }
+
+    //设置标题栏的点击事件
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            //系统的返回键的id
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.menu_item1:
+                intentToGroupInfo();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void intentToGroupInfo(){
+        Intent intent = new Intent(this, GroupInfoActivity.class);
+        intent.putExtra("groupId", groupId);
+        startActivity(intent);
+    }
+
 }

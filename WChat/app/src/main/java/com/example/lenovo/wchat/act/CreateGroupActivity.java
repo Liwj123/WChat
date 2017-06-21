@@ -14,7 +14,7 @@ import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.exceptions.HyphenateException;
 
-public class CreateGroupActivity extends AppCompatActivity {
+public class CreateGroupActivity extends BaseActivity {
 
     private EditText name,intro;
 
@@ -45,8 +45,8 @@ public class CreateGroupActivity extends AppCompatActivity {
                     EMGroup group = EMClient.getInstance().groupManager().createGroup(groupName, groupIntro, new String[]{}, "", option);
                     if(group != null){
                         Toast.makeText(this, "创建成功", Toast.LENGTH_SHORT).show();
-                        GroupManager.getInstance().getiGroupList().refGroupList();
                         finish();
+                        GroupManager.getInstance().getiGroupList().refGroupList();
                     }
                 } catch (HyphenateException e) {
                     e.printStackTrace();

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.lenovo.wchat.R;
 import com.example.lenovo.wchat.Utils.FaceList;
 import com.example.lenovo.wchat.Utils.StringUtil;
+import com.example.lenovo.wchat.act.GroupMessageActivity;
 import com.example.lenovo.wchat.act.MainActivity;
 import com.example.lenovo.wchat.act.MessageActivity;
 import com.example.lenovo.wchat.adapter.FaceAdapter;
@@ -57,7 +58,12 @@ public class FaceFragment extends BaseFragment {
         GridLayoutManager glm = new GridLayoutManager(getActivity(), 7, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(glm);
         recyclerView.setAdapter(adapter);
-        et = ((MessageActivity)getActivity()).et_message;
+
+        if(getActivity() instanceof MessageActivity){
+            et = ((MessageActivity)getActivity()).et_message;
+        }else if(getActivity() instanceof GroupMessageActivity){
+            et = ((GroupMessageActivity)getActivity()).et_message;
+        }
         adapter.setonFaceItemClick(new IFaceItemClick() {
             @Override
             public void faceItemClick(int position) {

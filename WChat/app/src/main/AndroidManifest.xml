@@ -91,7 +91,8 @@
             android:name=".act.GroupListActivity"
             android:launchMode="singleTop" />
         <activity android:name=".act.CreateGroupActivity" />
-        <activity android:name=".act.GroupMessageActivity"></activity>
+        <activity android:name=".act.GroupMessageActivity" />
+        <activity android:name=".act.GroupInfoActivity"></activity>
     </application>
 
 </manifest>

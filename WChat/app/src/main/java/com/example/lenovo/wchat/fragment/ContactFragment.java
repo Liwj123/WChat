@@ -2,6 +2,8 @@ package com.example.lenovo.wchat.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import com.example.lenovo.wchat.adapter.ContactAdapter;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,11 +27,21 @@ import java.util.List;
 public class ContactFragment extends BaseFragment {
 
     private View group;
+    private RecyclerView recycler;
+    private List<String> list = new ArrayList<>();
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            list = (List<String>) msg.obj;
+            ContactAdapter adapter = new ContactAdapter(getActivity(), list);
+            recycler.setAdapter(adapter);
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_contact,null);
+        return inflater.inflate(R.layout.fragment_contact, null);
     }
 
     @Override
@@ -39,6 +52,12 @@ public class ContactFragment extends BaseFragment {
 
     private void initView(View view) {
         group = view.findViewById(R.id.contact_group);
+        recycler = (RecyclerView) view.findViewById(R.id.contact_recycler);
+
+        getFriendList();
+
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        recycler.setLayoutManager(llm);
 
         group.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,5 +66,22 @@ public class ContactFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
+    }
+
+    private void getFriendList() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    list = EMClient.getInstance().contactManager().getAllContactsFromServer();
+                    Message msg = handler.obtainMessage();
+                    msg.obj = list;
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
